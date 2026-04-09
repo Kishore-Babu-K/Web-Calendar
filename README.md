@@ -1,39 +1,216 @@
-# Web-Calendar
-A Fully Responsive Web Calendar Component Made Using React/Next.js
+# 📅 Interactive 3D Wall Calendar
 
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+A visually rich, interactive **3D wall calendar component** built using **Next.js, React, and Tailwind CSS**, designed to replicate the feel of a real-life hanging calendar with modern UI/UX enhancements.
 
-## Getting Started
+---
 
-First, run the development server:
+## ✨ Features
+
+### 🎨 Realistic Wall Calendar UI
+
+* 3D **hanging calendar design** with:
+
+  * Nail and binding hoops
+  * Paper-like layout and depth
+* Dynamic shadows and layered depth for realism
+* Subtle **page corner flutter animation** for natural feel
+
+---
+
+### 📖 Page Flip Navigation
+
+* Smooth **3D page flip animation** between months
+* Supports:
+
+  * Click interaction (right side)
+  * Swipe gesture (mobile)
+* Includes subtle **page flip sound effect**
+
+---
+
+### 📅 Date Range Selection
+
+* Double-click to select **start date**
+* Click another date to select **end date**
+* Visual enhancements:
+
+  * Connected **capsule-style range highlight**
+  * Soft gradient fill
+  * Glow/elevation effect
+  * Hover preview for range selection
+  * Smooth selection animations
+
+---
+
+### 📝 Notes & Event System
+
+#### 📌 Single-Day Notes
+
+* Click a date to:
+
+  * View existing note
+  * Add or edit note
+* Subtle highlight for dates with notes
+
+---
+
+#### 📆 Range-Based Notes
+
+* Attach notes to selected date ranges
+* Highlight entire range visually
+* Click to view detailed notes and edit
+
+---
+
+#### ⏳ Countdown Feature
+
+* Supports countdown events across date ranges
+* Features:
+
+  * Automatic **date progression tracking**
+  * Red **strikethrough** for completed days
+  * Faded past dates
+  * “Days left” indicator
+
+---
+
+#### 🚨 Event & Deadline Indicators
+
+* Visual markers on dates:
+
+  * 🔴 Deadlines (highlight + subtle pulse)
+  * 🔵 Events (color-coded indicators)
+* Clean corner-based UI for minimal clutter
+
+---
+
+### 🗒 Monthly Notes Section
+
+* Dedicated **aesthetic notes area**
+* Features:
+
+  * Handwriting-style font
+  * Bullet points
+  * Editable lines (double-click to edit)
+* Designed to feel casual and natural
+
+---
+
+### 📱 Fully Responsive
+
+* Desktop:
+
+  * Full 3D layout and interactions
+* Mobile:
+
+  * Optimized layout
+  * Touch-friendly gestures
+
+---
+
+## 🧱 Tech Stack
+
+* **Next.js (App Router)**
+* **React (TypeScript)**
+* **Tailwind CSS**
+* CSS Animations & Transforms (for 3D effects)
+
+---
+
+## 📂 Project Structure
+
+```plaintext
+src/
+├── components/
+│   ├── calendar/
+│   │   ├── Calendar.tsx
+│   │   ├── CalendarGrid.tsx
+│   │   ├── DayCell.tsx
+│   │   ├── PageFlipWrapper.tsx
+│   │   ├── NotesPanel.tsx
+│
+├── hooks/
+│   ├── useDateRange.ts
+│   ├── useNotesManager.ts
+│
+├── utils/
+│   ├── calendar.ts
+│
+├── types/
+│   ├── index.ts
+```
+
+---
+
+## 🚀 Getting Started
+
+### 1. Clone the Repository
+
+```bash
+git clone <your-repo-link>
+cd calendar-app
+```
+
+### 2. Install Dependencies
+
+```bash
+npm install
+```
+
+### 3. Run Development Server
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open:
+👉 http://localhost:3000
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+---
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## 💾 Data Persistence
 
-## Learn More
+* Uses **localStorage** to store:
 
-To learn more about Next.js, take a look at the following resources:
+  * Notes
+  * Date ranges
+  * Events and countdown data
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+No backend or API is required.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+---
 
-## Deploy on Vercel
+## 🎯 Design Philosophy
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+This project focuses on:
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+* Translating a **real-world object** into a digital interface
+* Maintaining **visual realism + usability balance**
+* Delivering **polished micro-interactions**
+* Writing **clean, scalable frontend code**
+
+---
+
+## 🧠 Key Highlights
+
+* Strong emphasis on **UX/UI details**
+* Smooth and realistic **3D animations**
+* Modular and reusable **component architecture**
+* Clean and maintainable codebase
+
+---
+
+## 📹 Demo
+
+Include:
+
+* Date range selection
+* Notes system
+* Page flip animation
+* Responsive behavior
+
+---
+
+## 🙌 Acknowledgment
+
+Inspired by real-world wall calendars and designed to push the boundaries of interactive UI components.
