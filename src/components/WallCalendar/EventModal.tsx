@@ -98,8 +98,9 @@ export const EventModal: React.FC<EventModalProps> = memo(
         if (!title.trim()) return;
 
         if (type === 'countdown') {
+          const startDate = payload?.range?.start ?? payload?.entry?.range?.start ?? payload?.date ?? payload?.entry?.date ?? '';
           const todayStr = toISODateStr(new Date());
-          if (startDate < todayStr) {
+          if (startDate && startDate < todayStr) {
             setError('Countdowns cannot start in the past.');
             return;
           }
