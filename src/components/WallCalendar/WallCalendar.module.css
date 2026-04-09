@@ -1,0 +1,1327 @@
+/* ─────────────────────────────────────────────────────────────────────────────
+   WallCalendar.module.css
+   3D Wall Calendar — complete design system
+   ───────────────────────────────────────────────────────────────────────────── */
+
+/* ── Design Tokens ─────────────────────────────────────────────────────────── */
+.wallScene {
+  --cal-width: 480px;
+  --cal-min-width: 320px;
+  --cal-radius: 8px;
+  --cal-bg: #ffffff;
+  --cal-shadow-1: 0 4px 6px rgba(0, 0, 0, 0.07);
+  --cal-shadow-2: 0 10px 25px rgba(0, 0, 0, 0.15);
+  --cal-shadow-3: 0 30px 60px rgba(0, 0, 0, 0.25);
+  --cal-shadow-deep: 0 60px 120px rgba(0, 0, 0, 0.35);
+
+  --ring-color-outer: #2d2d2d;
+  --ring-color-inner: #888888;
+  --ring-shine: #cccccc;
+
+  --text-primary: #1a1a2e;
+  --text-secondary: #4a4a6a;
+  --text-muted: #9090b0;
+  --range-bg: #fffbf0; /* very soft yellow tint for the inner range */
+  --range-start-bg: #fbbf24; /* Yellow 400 for borders/anchors */
+  --range-end-bg: #fbbf24;
+  --range-text: #713f12; /* Dark yellow/brown for good contrast */
+  
+  --weekend-text: #dc2626; /* Sunday red */
+
+  --note-line-color: rgba(0, 0, 0, 0.10);
+  --note-font: 'Caveat', 'Segoe Print', cursive;
+
+  --accent-event: #3b82f6;
+  --accent-countdown: #f59e0b;
+  --accent-note: #10b981;
+  --accent-deadline: #ef4444;
+
+  --flip-duration: 0.65s;
+  --flip-easing: cubic-bezier(0.645, 0.045, 0.355, 1.000);
+
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  padding: 60px 16px 40px;
+  box-sizing: border-box;
+}
+
+/* ── Wall Texture ──────────────────────────────────────────────────────────── */
+.wallTexture {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  background:
+    radial-gradient(ellipse at 30% 50%, rgba(200, 200, 255, 0.04) 0%, transparent 70%),
+    radial-gradient(ellipse at 70% 50%, rgba(255, 200, 200, 0.04) 0%, transparent 70%),
+    #e8e4de;
+  /* Subtle linen-like noise */
+  background-image:
+    repeating-linear-gradient(
+      0deg,
+      transparent,
+      transparent 2px,
+      rgba(0,0,0,0.015) 2px,
+      rgba(0,0,0,0.015) 4px
+    ),
+    repeating-linear-gradient(
+      90deg,
+      transparent,
+      transparent 2px,
+      rgba(0,0,0,0.015) 2px,
+      rgba(0,0,0,0.015) 4px
+    );
+  pointer-events: none;
+}
+
+/* ── Nail Anchor ─────────────────────────────────────────────────────────── */
+.nailAnchor {
+  position: relative;
+  z-index: 10;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-bottom: -2px;
+}
+
+.nailHead {
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 40% 35%, #d0d0d0, #5a5a5a 70%);
+  box-shadow: 0 2px 6px rgba(0,0,0,0.4), inset 0 1px 2px rgba(255,255,255,0.3);
+  position: relative;
+  z-index: 12;
+}
+
+.nailPoint {
+  width: 4px;
+  height: 20px;
+  background: linear-gradient(to bottom, #888, #3a3a3a);
+  border-radius: 0 0 2px 2px;
+  margin-top: -2px;
+  box-shadow: 1px 0 3px rgba(0,0,0,0.3);
+}
+
+/* ── Calendar Frame ──────────────────────────────────────────────────────── */
+.calendarFrame {
+  position: relative;
+  z-index: 5;
+  width: var(--cal-width);
+  min-width: var(--cal-min-width);
+  max-width: 100%;
+  perspective: 1200px;
+  perspective-origin: 50% -10%;
+  /* Subtle tilt for realism */
+  transform: rotateX(1deg);
+  filter: drop-shadow(0 40px 80px rgba(0,0,0,0.3)) drop-shadow(0 10px 20px rgba(0,0,0,0.2));
+}
+
+/* ── Binding Bar & Rings ─────────────────────────────────────────────────── */
+.bindingContainer {
+  position: relative;
+  z-index: 20;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.nail {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-bottom: -4px;
+  position: relative;
+  z-index: 25;
+}
+
+.nailShaft {
+  width: 3px;
+  height: 12px;
+  background: linear-gradient(to bottom, #999, #555);
+  border-radius: 0 0 1px 1px;
+}
+
+.nailHook {
+  width: 12px;
+  height: 6px;
+  border: 2.5px solid #666;
+  border-top: none;
+  border-radius: 0 0 8px 8px;
+  margin-top: -2px;
+}
+
+.bindingBar {
+  width: 100%;
+  height: 20px;
+  background: linear-gradient(
+    to bottom,
+    #3a3a3a 0%,
+    #5a5a5a 30%,
+    #8a8a8a 50%,
+    #5a5a5a 70%,
+    #3a3a3a 100%
+  );
+  border-radius: 4px 4px 0 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-evenly;
+  padding: 0 12px;
+  box-shadow:
+    0 -2px 4px rgba(0,0,0,0.3),
+    0 2px 6px rgba(0,0,0,0.4),
+    inset 0 1px 2px rgba(255,255,255,0.1);
+}
+
+.ring {
+  position: relative;
+  width: 22px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.ringOuter {
+  position: absolute;
+  width: 18px;
+  height: 22px;
+  border: 3px solid var(--ring-color-outer);
+  border-radius: 50%;
+  background: transparent;
+  box-shadow:
+    inset 0 1px 3px rgba(255,255,255,0.15),
+    0 2px 4px rgba(0,0,0,0.5),
+    inset -1px -1px 3px rgba(0,0,0,0.4);
+}
+
+.ringInner {
+  position: absolute;
+  width: 10px;
+  height: 14px;
+  border: 2px solid var(--ring-color-inner);
+  border-radius: 50%;
+  background: transparent;
+  box-shadow: inset 0 1px 2px rgba(255,255,255,0.2);
+}
+
+/* ── 3D Page Flip Wrapper ────────────────────────────────────────────────── */
+.pageFlipWrapper {
+  position: relative;
+  transform-style: preserve-3d;
+  transition: transform var(--flip-duration) var(--flip-easing);
+  transform-origin: top center;
+  border-radius: 0 0 var(--cal-radius) var(--cal-radius);
+  overflow: visible;
+}
+
+/* Next-month flip (rotate forward/up) */
+.flipNext {
+  animation: flipNextAnim var(--flip-duration) var(--flip-easing) forwards;
+}
+
+/* Prev-month flip (rotate back/down) */
+.flipPrev {
+  animation: flipPrevAnim var(--flip-duration) var(--flip-easing) forwards;
+}
+
+@keyframes flipNextAnim {
+  0%   { transform: rotateX(0deg) translateZ(0); }
+  40%  { transform: rotateX(-90deg) translateZ(30px); box-shadow: 0 40px 80px rgba(0,0,0,0.3); }
+  100% { transform: rotateX(0deg) translateZ(0); }
+}
+
+@keyframes flipPrevAnim {
+  0%   { transform: rotateX(0deg) translateZ(0); }
+  40%  { transform: rotateX(90deg) translateZ(30px); box-shadow: 0 -40px 80px rgba(0,0,0,0.2); }
+  100% { transform: rotateX(0deg) translateZ(0); }
+}
+
+/* ── Back Page (visible during flip) ────────────────────────────────────── */
+.backPage {
+  position: absolute;
+  inset: 0;
+  background: #f8f7f5;
+  border-radius: 0 0 var(--cal-radius) var(--cal-radius);
+  z-index: 0;
+  overflow: hidden;
+}
+
+.backPageInner {
+  padding: 24px;
+}
+
+.backPageLines {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.backPageLine {
+  height: 1px;
+  background: rgba(0,0,0,0.08);
+  border-radius: 1px;
+}
+
+/* ── Front Page ──────────────────────────────────────────────────────────── */
+.frontPage {
+  position: relative;
+  z-index: 2;
+  background: var(--cal-bg);
+  border-radius: 0 0 var(--cal-radius) var(--cal-radius);
+  overflow: hidden;
+  box-shadow:
+    var(--cal-shadow-1),
+    var(--cal-shadow-2),
+    inset 0 0 0 0.5px rgba(0,0,0,0.04);
+}
+
+/* ── Page Flutter (bottom corners) ──────────────────────────────────────── */
+.pageCornerLeft,
+.pageCornerRight {
+  position: absolute;
+  bottom: 0;
+  width: 40px;
+  height: 40px;
+  z-index: 10;
+  pointer-events: none;
+}
+
+.pageCornerLeft {
+  left: 0;
+  transform-origin: bottom left;
+  animation: flutterLeft 4s ease-in-out infinite;
+  background: linear-gradient(135deg, transparent 50%, rgba(0,0,0,0.04) 50%);
+  clip-path: polygon(0 0, 100% 100%, 0 100%);
+}
+
+.pageCornerRight {
+  right: 0;
+  transform-origin: bottom right;
+  animation: flutterRight 4.5s ease-in-out infinite;
+  background: linear-gradient(-135deg, transparent 50%, rgba(0,0,0,0.04) 50%);
+  clip-path: polygon(100% 0, 100% 100%, 0 100%);
+}
+
+@keyframes flutterLeft {
+  0%, 100% { transform: rotateZ(0deg) skewX(0deg); }
+  25%  { transform: rotateZ(-1.5deg) skewX(-1deg); }
+  75%  { transform: rotateZ(0.5deg) skewX(0.5deg); }
+}
+
+@keyframes flutterRight {
+  0%, 100% { transform: rotateZ(0deg) skewX(0deg); }
+  30%  { transform: rotateZ(1.5deg) skewX(1deg); }
+  65%  { transform: rotateZ(-0.5deg) skewX(-0.5deg); }
+}
+
+/* ── Calendar Page ───────────────────────────────────────────────────────── */
+.calendarPage {
+  display: flex;
+  flex-direction: column;
+}
+
+/* ── Hero Section ────────────────────────────────────────────────────────── */
+.heroSection {
+  position: relative;
+  width: 100%;
+  height: 200px;
+  overflow: hidden;
+  flex-shrink: 0;
+}
+
+.heroPattern {
+  position: absolute;
+  inset: 0;
+  background-repeat: no-repeat;
+  background-size: cover;
+  opacity: 0.8;
+}
+
+.heroShapes {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.heroShapeLeft {
+  position: absolute;
+  bottom: -20px;
+  left: -20px;
+  width: 200px;
+  height: 180px;
+  background: rgba(255, 255, 255, 0.12);
+  clip-path: polygon(0 100%, 100% 100%, 60% 0%);
+  transform: skewX(-5deg);
+}
+
+.heroShapeRight {
+  position: absolute;
+  bottom: -20px;
+  right: -10px;
+  width: 160px;
+  height: 160px;
+  background: rgba(255, 255, 255, 0.08);
+  clip-path: polygon(40% 0%, 100% 0%, 100% 100%, 0% 100%);
+}
+
+.heroTitleBlock {
+  position: absolute;
+  right: 28px;
+  bottom: 20px;
+  text-align: right;
+}
+
+.heroYear {
+  display: block;
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 3px;
+  color: rgba(255, 255, 255, 0.75);
+  margin-bottom: 2px;
+}
+
+.heroMonth {
+  font-size: 36px;
+  font-weight: 900;
+  letter-spacing: 4px;
+  color: #ffffff;
+  text-shadow: 0 2px 12px rgba(0,0,0,0.3);
+  line-height: 1;
+  margin: 0;
+}
+
+/* ── Content Section ─────────────────────────────────────────────────────── */
+.contentSection {
+  padding: 16px 20px 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  background: #ffffff;
+}
+
+/* ── Countdown Strip ─────────────────────────────────────────────────────── */
+.countdownStrip {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 10px 12px;
+  background: linear-gradient(135deg, #fefefe, #f7f7fa);
+  border-radius: 8px;
+  border: 1px solid rgba(0,0,0,0.07);
+  box-shadow: 0 1px 4px rgba(0,0,0,0.05);
+}
+
+.countdownItem {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12px;
+  padding: 4px 0;
+}
+
+.countdownItem.countdownPast {
+  opacity: 0.55;
+  text-decoration: line-through;
+  text-decoration-color: var(--accent-deadline);
+}
+
+.countdownIcon {
+  font-size: 14px;
+  flex-shrink: 0;
+}
+
+.countdownTitle {
+  flex: 1;
+  font-weight: 600;
+  color: var(--text-primary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.countdownBadge {
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--entry-color, var(--accent-countdown));
+  background: color-mix(in srgb, var(--entry-color, var(--accent-countdown)) 12%, transparent);
+  padding: 2px 8px;
+  border-radius: 99px;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+/* ── Monthly Notes Panel ─────────────────────────────────────────────────── */
+.monthlyNotesPanel {
+  background: #fdfdf9;
+  border-radius: 6px;
+  padding: 10px 14px 12px;
+  border: 1px solid rgba(0,0,0,0.07);
+  position: relative;
+}
+
+.monthlyNotesHeading {
+  font-family: var(--note-font);
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--text-secondary);
+  margin: 0 0 8px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.monthlyNotesBullet {
+  color: var(--accent-note);
+  font-size: 12px;
+}
+
+.noteLines {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+.noteLine {
+  position: relative;
+  display: flex;
+  align-items: center;
+  min-height: 28px;
+  cursor: text;
+}
+
+.noteRuledLine {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: var(--note-line-color);
+  pointer-events: none;
+}
+
+.noteLineEditing .noteRuledLine {
+  background: rgba(59, 130, 246, 0.3);
+}
+
+.noteText {
+  font-family: var(--note-font);
+  font-size: 14px;
+  color: var(--text-primary);
+  padding: 4px 2px;
+  width: 100%;
+  line-height: 1.5;
+  transition: color 0.15s;
+}
+
+.noteTextEmpty {
+  color: transparent;
+}
+
+.noteLine:hover .noteTextEmpty {
+  color: var(--text-muted);
+}
+
+.noteLine:hover .noteRuledLine {
+  background: rgba(59, 130, 246, 0.2);
+}
+
+.noteInput {
+  font-family: var(--note-font);
+  font-size: 14px;
+  color: var(--text-primary);
+  background: transparent;
+  border: none;
+  outline: none;
+  width: 100%;
+  resize: none;
+  padding: 4px 2px;
+  line-height: 1.5;
+  overflow: hidden;
+}
+
+.monthlyNotesHint {
+  font-size: 10px;
+  color: var(--text-muted);
+  margin: 6px 0 0;
+  text-align: right;
+}
+
+/* ── Calendar Grid ───────────────────────────────────────────────────────── */
+.gridContainer {
+  flex: 1;
+}
+
+.gridWrapper {
+  width: 100%;
+}
+
+.monthGrid {
+  flex: 1;
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  grid-auto-rows: 1fr;
+  /* Removed gap to allow continuous visual ranges */
+  border-top: 1px solid var(--grid-line);
+  border-left: 1px solid var(--grid-line);
+}
+
+.dayHeaders {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  margin-bottom: 4px;
+}
+
+.dayHeader {
+  text-align: center;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  color: var(--text-muted);
+  padding: 4px 0;
+  text-transform: uppercase;
+}
+
+.dayHeader:nth-child(7) {
+  color: var(--weekend-text);
+  opacity: 0.8;
+}
+
+.gridCells {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 1px;
+  background: var(--grid-line);
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+/* ── Day Cell ────────────────────────────────────────────────────────────── */
+.dayCell {
+  position: relative;
+  min-height: 80px;
+  padding: 6px;
+  display: flex;
+  flex-direction: column;
+  transition: background-color 0.2s, box-shadow 0.2s;
+  cursor: pointer;
+  border-bottom: 1px solid var(--grid-line);
+  border-right: 1px solid var(--grid-line);
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.dayCell:hover {
+  background: rgba(0, 0, 0, 0.02);
+  z-index: 5;
+}
+
+.dayCellInRange:hover,
+.dayCellRangeStart:hover,
+.dayCellRangeEnd:hover,
+.dayCellHasEntries:hover {
+  transform: scale(1.02);
+  z-index: 10;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+  border-radius: 8px !important;
+}
+
+.dayCellDeadline:hover {
+  transform: scale(1.02);
+  z-index: 10;
+  box-shadow: inset 0 0 20px rgba(239, 68, 68, 0.25), 0 4px 12px rgba(0, 0, 0, 0.1);
+  border-radius: 8px !important;
+  background: rgba(239, 68, 68, 0.05); /* very soft red core */
+}
+
+/* Only Sunday gets the red color, Saturday is normal */
+.gridCells .dayCell:nth-child(7n) .dayNumber {
+  color: var(--weekend-text);
+}
+
+.dayCellOtherMonth {
+  background: #fcfcfc;
+}
+
+.dayCellOtherMonth .dayNumber {
+  color: #d4d4d8; /* Highly dimmed */
+}
+
+/* Ensure indicators in other months are also dimmed */
+.dayCellOtherMonth .entryPill {
+  opacity: 0.35;
+}
+
+.dayCellToday {
+  background: var(--today-bg) !important;
+  box-shadow: inset 0 0 0 1.5px var(--today-text);
+  border-radius: 6px;
+  z-index: 1;
+}
+
+.dayCellToday .dayNumber {
+  color: #ffffff !important;
+  position: relative;
+  z-index: 2;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: 2px;
+  margin-left: 2px;
+  font-weight: 800;
+}
+
+.dayCellToday .dayNumber::before {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 22px;
+  height: 22px;
+  background: var(--today-text);
+  border-radius: 50%;
+  z-index: -1;
+  box-shadow: 0 2px 4px rgba(37, 99, 235, 0.3);
+}
+
+/* ── Original Blocky Range Theme (User Colored) ── */
+
+.dayCellRangeStart {
+  background: var(--range-bg) !important;
+  border-left: 6px solid var(--range-start-bg) !important;
+  border-top: 1px solid var(--range-start-bg) !important;
+  border-bottom: 1px solid var(--range-start-bg) !important;
+  border-radius: 12px 0 0 12px;
+  z-index: 1;
+}
+
+.dayCellRangeEnd {
+  background: var(--range-bg) !important;
+  border-right: 6px solid var(--range-start-bg) !important;
+  border-top: 1px solid var(--range-start-bg) !important;
+  border-bottom: 1px solid var(--range-start-bg) !important;
+  border-radius: 0 12px 12px 0;
+  z-index: 1;
+}
+
+.dayCellInRange {
+  background: var(--range-bg) !important;
+  border-top: 1px solid var(--range-start-bg) !important;
+  border-bottom: 1px solid var(--range-start-bg) !important;
+  z-index: 0;
+}
+
+/* If single day selected as range start/end */
+.dayCellSelectionStart {
+  border: 1px solid var(--range-start-bg) !important;
+  border-radius: 12px;
+  background: var(--range-bg) !important;
+}
+
+/* Make sure text pairs with the yellow */
+.dayCellRangeStart .dayNumber,
+.dayCellRangeEnd .dayNumber,
+.dayCellSelectionStart .dayNumber {
+  color: var(--range-text) !important;
+  font-weight: 700;
+}
+
+/* Hover Previews */
+.dayCellPreviewStart {
+  background: rgba(251, 191, 36, 0.2) !important;
+  border-radius: 12px 0 0 12px;
+}
+.dayCellPreviewEnd {
+  background: rgba(251, 191, 36, 0.2) !important;
+  border-radius: 0 12px 12px 0;
+}
+.dayCellPreviewInRange {
+  background: rgba(251, 191, 36, 0.1) !important;
+}
+
+
+
+.dayCellDeadline {
+  box-shadow: inset 0 0 0 2px var(--accent-deadline, #ef4444);
+  background-color: var(--deadline-bg, transparent);
+  border-radius: 6px;
+  transition: all 0.2s ease;
+}
+
+@keyframes deadlinePulse {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(239,68,68,0); }
+  50%       { box-shadow: 0 0 0 3px rgba(239,68,68,0.25); }
+}
+
+.dayCellHasEntries {
+  background: #f9f9ff;
+}
+
+/* ── Day Number ──────────────────────────────────────────────────────────── */
+.dayNumber {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text-primary);
+  line-height: 1;
+  margin-bottom: 2px;
+  transition: color 0.15s;
+  z-index: 2;
+  position: relative;
+}
+
+/* ── Entry Pills (Textual) ─────────────────────────────────────────────── */
+.entryPills {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  width: 100%;
+  position: relative;
+  z-index: 2;
+  margin-top: auto;
+  padding-bottom: 2px;
+}
+
+.entryPill {
+  font-family: 'Patrick Hand', 'Caveat', cursive;
+  font-size: 15px;
+  font-weight: 500;
+  color: #1e40af !important; /* Royal Blue pen ink */
+  background: transparent !important;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  width: 100%;
+  text-align: left;
+  line-height: 1;
+  box-shadow: none !important;
+  padding: 0 4px;
+  transform: rotate(-1.5deg); /* Slight natural handwriting tilt */
+  letter-spacing: 0.02em;
+}
+
+/* Remove colored backgrounds for indicators since it's just ink now */
+
+.entryPillMore {
+  font-size: 9px;
+  font-weight: 700;
+  color: var(--text-muted);
+  text-align: left;
+  padding-left: 2px;
+  margin-top: 1px;
+}
+
+/* ── Deadline Pulse Ring ─────────────────────────────────────────────────── */
+
+.smoothDeadlinePulse {
+  position: absolute;
+  inset: 0;
+  border-radius: 6px;
+  animation: fadePulse 2s ease-in-out infinite;
+  pointer-events: none;
+  z-index: 1;
+}
+
+@keyframes fadePulse {
+  0% { box-shadow: inset 0 0 0 3px var(--accent-deadline, #ef4444); }
+  50% { box-shadow: inset 0 0 0 6px var(--accent-deadline, #ef4444), inset 0 0 20px rgba(239, 68, 68, 0.2); }
+  100% { box-shadow: inset 0 0 0 3px var(--accent-deadline, #ef4444); }
+}
+
+/* ── Countdown Strike-through ────────────────────────────────────────────── */
+.countdownStrike {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 100 100' preserveAspectRatio='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M10,95 Q50,50 90,5' stroke='%23ef4444' stroke-width='4' fill='none' stroke-linecap='round' opacity='0.8'/%3E%3C/svg%3E");
+  background-size: 100% 100%;
+  z-index: 3;
+}
+
+/* ── Navigation Controls ─────────────────────────────────────────────────── */
+.navControls {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 10px;
+  padding: 0 4px;
+  gap: 8px;
+}
+
+.navBtn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  border: 1.5px solid rgba(255,255,255,0.25);
+  background: rgba(255,255,255,0.15);
+  backdrop-filter: blur(8px);
+  color: #ffffff;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+}
+
+.navBtn:hover:not(:disabled) {
+  background: rgba(255,255,255,0.3);
+  transform: scale(1.08);
+  box-shadow: 0 4px 16px rgba(0,0,0,0.2);
+}
+
+.navBtn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.navBtnToday {
+  padding: 0 18px;
+  height: 36px;
+  border-radius: 18px;
+  border: 1.5px solid rgba(255,255,255,0.25);
+  background: rgba(255,255,255,0.15);
+  backdrop-filter: blur(8px);
+  color: #ffffff;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+}
+
+.navBtnToday:hover:not(:disabled) {
+  background: rgba(255,255,255,0.28);
+  transform: scale(1.04);
+}
+
+.navBtnToday:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+/* ── Sound Toggle ────────────────────────────────────────────────────────── */
+.soundToggleBtn {
+  position: absolute;
+  top: -46px;
+  right: 0;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  border: 1.5px solid rgba(255,255,255,0.2);
+  background: rgba(255,255,255,0.12);
+  backdrop-filter: blur(8px);
+  font-size: 15px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+  color: white;
+}
+
+.soundToggleBtn:hover {
+  background: rgba(255,255,255,0.22);
+  transform: scale(1.1);
+}
+
+/* ── Selection Hint ──────────────────────────────────────────────────────── */
+.selectionHint {
+  margin-top: 12px;
+  padding: 8px 16px;
+  background: rgba(59,130,246,0.12);
+  border: 1px solid rgba(59,130,246,0.25);
+  border-radius: 8px;
+  font-size: 12px;
+  color: #3b82f6;
+  font-weight: 600;
+  animation: fadeSlideIn 0.2s ease;
+  z-index: 10;
+}
+
+@keyframes fadeSlideIn {
+  from { opacity: 0; transform: translateY(-4px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* ── Event Modal ─────────────────────────────────────────────────────────── */
+.modalOverlay {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  background: rgba(0, 0, 0, 0.55);
+  backdrop-filter: blur(6px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+  animation: overlayIn 0.2s ease;
+}
+
+@keyframes overlayIn {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+.modal {
+  background: #ffffff;
+  border-radius: 16px;
+  width: 100%;
+  max-width: 440px;
+  box-shadow:
+    0 4px 6px rgba(0,0,0,0.07),
+    0 20px 50px rgba(0,0,0,0.2),
+    0 0 0 0.5px rgba(0,0,0,0.05);
+  animation: modalIn 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+  max-height: 90vh;
+  overflow-y: auto;
+}
+
+@keyframes modalIn {
+  from { opacity: 0; transform: scale(0.93) translateY(12px); }
+  to   { opacity: 1; transform: scale(1) translateY(0); }
+}
+
+.modalHeader {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 20px 20px 0;
+}
+
+.modalTitle {
+  font-size: 18px;
+  font-weight: 800;
+  color: var(--text-primary);
+  margin: 0;
+  flex: 1;
+  line-height: 1.2;
+}
+
+.modalDateLabel {
+  font-size: 11px;
+  color: var(--text-muted);
+  background: #f0f0f5;
+  padding: 3px 8px;
+  border-radius: 99px;
+  font-weight: 600;
+  white-space: nowrap;
+  align-self: center;
+}
+
+.modalCloseBtn {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  border: none;
+  background: #f0f0f5;
+  color: var(--text-secondary);
+  cursor: pointer;
+  font-size: 13px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  transition: all 0.15s;
+}
+
+.modalCloseBtn:hover {
+  background: #e0e0e8;
+  color: var(--text-primary);
+}
+
+.modalForm {
+  padding: 16px 20px 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+/* ── Type Selector ───────────────────────────────────────────────────────── */
+.typeSelector {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 8px;
+}
+
+.typeOption {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  padding: 10px 6px;
+  border-radius: 10px;
+  border: 1.5px solid #e0e0e8;
+  cursor: pointer;
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--text-secondary);
+  transition: all 0.15s ease;
+  text-align: center;
+}
+
+.typeOption:hover {
+  border-color: #c0c0d0;
+  background: #f8f8fc;
+}
+
+.typeOptionSelected {
+  color: var(--text-primary);
+  font-weight: 700;
+}
+
+.typeIcon {
+  font-size: 18px;
+}
+
+/* ── Form Fields ─────────────────────────────────────────────────────────── */
+.formGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.formLabel {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  color: var(--text-muted);
+  text-transform: uppercase;
+}
+
+.formInput {
+  width: 100%;
+  padding: 10px 12px;
+  border: 1.5px solid #e0e0e8;
+  border-radius: 8px;
+  font-size: 14px;
+  color: var(--text-primary);
+  background: #fafafa;
+  outline: none;
+  transition: border-color 0.15s, box-shadow 0.15s;
+  box-sizing: border-box;
+  font-family: inherit;
+}
+
+.formInput:focus {
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 3px rgba(59,130,246,0.12);
+  background: #ffffff;
+}
+
+.formTextarea {
+  resize: vertical;
+  min-height: 72px;
+}
+
+/* ── Color Row ───────────────────────────────────────────────────────────── */
+.colorRow {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.colorSwatch {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  border: 2px solid transparent;
+  cursor: pointer;
+  transition: all 0.15s;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.2);
+  flex-shrink: 0;
+}
+
+.colorSwatch:hover {
+  transform: scale(1.2);
+  box-shadow: 0 2px 8px rgba(0,0,0,0.25);
+}
+
+.colorSwatchSelected {
+  border-color: #1a1a2e;
+  transform: scale(1.15);
+}
+
+.colorPicker {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  border: 1.5px solid #e0e0e8;
+  cursor: pointer;
+  padding: 0;
+  background: none;
+  overflow: hidden;
+}
+
+/* ── Modal Actions ───────────────────────────────────────────────────────── */
+.modalActions {
+  display: flex;
+  gap: 8px;
+  justify-content: flex-end;
+  padding-top: 4px;
+}
+
+.btnPrimary {
+  padding: 10px 22px;
+  border-radius: 8px;
+  border: none;
+  background: linear-gradient(135deg, #1a1a2e, #3b4a99);
+  color: #ffffff;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.15s;
+  box-shadow: 0 2px 8px rgba(26,26,46,0.3);
+}
+
+.btnPrimary:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 14px rgba(26,26,46,0.4);
+}
+
+.btnSecondary {
+  padding: 10px 18px;
+  border-radius: 8px;
+  border: 1.5px solid #e0e0e8;
+  background: #ffffff;
+  color: var(--text-secondary);
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.btnSecondary:hover {
+  background: #f0f0f5;
+  border-color: #c0c0d0;
+}
+
+.btnDanger {
+  padding: 10px 18px;
+  border-radius: 8px;
+  border: 1.5px solid rgba(239,68,68,0.25);
+  background: rgba(239,68,68,0.06);
+  color: var(--accent-deadline);
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s;
+  margin-right: auto;
+}
+
+.btnDanger:hover {
+  background: rgba(239,68,68,0.12);
+  border-color: rgba(239,68,68,0.45);
+}
+
+/* ── Screen-reader only ──────────────────────────────────────────────────── */
+.srOnly {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* ── Responsive ──────────────────────────────────────────────────────────── */
+@media (max-width: 520px) {
+  .wallScene {
+    --cal-width: 100%;
+    padding: 48px 8px 32px;
+  }
+
+  .heroSection {
+    height: 160px;
+  }
+
+  .heroMonth {
+    font-size: 28px;
+    letter-spacing: 2px;
+  }
+
+  .contentSection {
+    padding: 12px 14px 20px;
+    gap: 10px;
+  }
+
+  .dayNumber {
+    font-size: 11px;
+  }
+
+  .navBtn,
+  .navBtnToday {
+    height: 32px;
+  }
+
+  .navBtnToday {
+    padding: 0 12px;
+    font-size: 11px;
+  }
+
+  .bindingBar {
+    padding: 0 8px;
+  }
+
+  .ring {
+    width: 16px;
+    height: 22px;
+  }
+
+  .ringOuter {
+    width: 13px;
+    height: 17px;
+    border-width: 2.5px;
+  }
+
+  .ringInner {
+    width: 7px;
+    height: 10px;
+    border-width: 1.5px;
+  }
+
+  .typeSelector {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .modal {
+    max-height: 95vh;
+  }
+}
+
+@media (max-width: 360px) {
+  .heroMonth {
+    font-size: 22px;
+  }
+
+  .dayNumber {
+    font-size: 10px;
+  }
+}
+
+/* ── High-contrast / reduced-motion overrides ────────────────────────────── */
+@media (prefers-reduced-motion: reduce) {
+  .flipNext,
+  .flipPrev {
+    animation: none;
+  }
+
+  .pageCornerLeft,
+  .pageCornerRight {
+    animation: none;
+  }
+
+  .dayCellDeadline,
+  .deadlinePulse,
+  .indicatorDeadline {
+    animation: none;
+  }
+}
